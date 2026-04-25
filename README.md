@@ -4,8 +4,8 @@ Fine-tuning **[m3rg-iitd/matscibert](https://huggingface.co/m3rg-iitd/matscibert
 **[CHEMDNER](https://huggingface.co/datasets/kjappelbaum/chemnlp-chemdner)** dataset for
 chemical entity recognition in biomedical literature.
 
-> **Live Demo** · [HuggingFace Spaces](https://huggingface.co/spaces/your-username/matscibert-ner)  
-> **Model** · [HuggingFace Hub](https://huggingface.co/your-username/matscibert-ner)
+
+> **Model** · [HuggingFace Hub](https://huggingface.co/teman67/matscibert-chem-ner)
 
 ---
 
