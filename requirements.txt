@@ -1,0 +1,16 @@
+# Core HuggingFace stack
+transformers==4.44.0
+datasets==2.21.0
+evaluate==0.4.3
+tokenizers==0.19.1
+accelerate==0.34.0
+
+# Metrics
+seqeval==1.2.2
+
+# Demo
+gradio==4.42.0
+
+# Utils
+numpy==1.26.4
+torch>=2.0.0
