@@ -6,26 +6,14 @@ from pathlib import Path
 from typing import NamedTuple
 from transformers import pipeline, AutoTokenizer, AutoModelForTokenClassification
 
-# MatSci-NLP entity type → display colour (for Gradio HighlightedText)
-# Labels are dataset-native; colours degrade gracefully for unknown types.
+# CHEMDNER entity type → display colour (for Gradio HighlightedText)
 ENTITY_COLORS = {
-    "MAT":  "#c8e6c9",   # green  — material
-    "PRO":  "#bbdefb",   # blue   — property
-    "SPL":  "#e1bee7",   # purple — sample descriptor
-    "SMT":  "#f8bbd0",   # pink   — synthesis method
-    "CMT":  "#ffe0b2",   # orange — characterisation method
-    "CHR":  "#fff9c4",   # yellow — characterisation (alt label)
-    "APL":  "#b2ebf2",   # teal   — application
+    "CHEM": "#c8e6c9",   # green — chemical entity
 }
 
 # Human-readable descriptions shown in the Gradio sidebar
 ENTITY_DESCRIPTIONS = {
-    "MAT": "🟢 Material      — e.g. titanium, PEEK, carbon fibre",
-    "PRO": "🔵 Property      — e.g. tensile strength, melting point",
-    "SPL": "🟣 Sample        — e.g. thin film, bulk sample",
-    "SMT": "🔴 Synthesis     — e.g. sintering, CVD deposition",
-    "CMT": "🟠 Characterisation — e.g. XRD, SEM, EBSD",
-    "APL": "🩵 Application   — e.g. turbine blades, fuel cells",
+    "CHEM": "🟢 Chemical — e.g. nitric oxide, ethanol, NaCl, aspirin",
 }
 
 

@@ -1,47 +1,46 @@
-# 🔬 MatSciBERT NER — Materials Science Named Entity Recognition
+# 🔬 MatSciBERT NER — Chemical Named Entity Recognition
 
 Fine-tuning **[m3rg-iitd/matscibert](https://huggingface.co/m3rg-iitd/matscibert)** on the
-**[MatSci-NLP](https://huggingface.co/datasets/m3rg-iitd/MatSci-NLP)** benchmark for NER
-across materials science literature.
+**[CHEMDNER](https://huggingface.co/datasets/kjappelbaum/chemnlp-chemdner)** dataset for
+chemical entity recognition in biomedical literature.
 
 > **Live Demo** · [HuggingFace Spaces](https://huggingface.co/spaces/your-username/matscibert-ner)  
 > **Model** · [HuggingFace Hub](https://huggingface.co/your-username/matscibert-ner)
 
 ---
 
-## Why MatSciBERT + MatSci-NLP?
+## Why MatSciBERT + CHEMDNER?
 
 | Choice | Rationale |
 |---|---|
-| `m3rg-iitd/matscibert` | Pre-trained on 2M+ materials science papers — already understands "MPa", "sintering", "tensile strength" before fine-tuning |
-| MatSci-NLP dataset | Real, peer-reviewed annotations from materials science literature (not synthetic) |
-| Together | Achieves state-of-the-art NER F1 on materials science text |
+| `m3rg-iitd/matscibert` | Pre-trained on 2M+ materials science papers — already understands scientific/chemical terminology before fine-tuning |
+| CHEMDNER dataset | 19 440 annotated examples of chemical names and compounds from PubMed abstracts and patents |
+| Together | Combines domain-aware language understanding with real chemical NER annotations |
 
 ---
 
-## Entity Types (MatSci-NLP)
+## Entity Types
 
 | Label | Description | Example |
 |---|---|---|
-| `MAT` | Material | *titanium*, *PEEK*, *alumina* |
-| `PRO` | Property | *tensile strength*, *melting point* |
-| `SPL` | Sample descriptor | *thin film*, *bulk sample* |
-| `SMT` | Synthesis method | *sintering*, *CVD deposition* |
-| `CMT` | Characterisation method | *XRD*, *SEM*, *EBSD* |
-| `APL` | Application | *turbine blades*, *fuel cells* |
+| `B-CHEM` | Beginning of a chemical entity | *nitric oxide*, *ethanol*, *NaCl* |
+| `I-CHEM` | Continuation of a chemical entity | (multi-token spans) |
+| `O` | Outside any entity | (non-chemical tokens) |
+
+The model outputs `CHEM` spans after BIO aggregation (e.g. `B-CHEM` + `I-CHEM` → one `CHEM` span).
 
 ---
 
 ## Architecture
 
 ```
-MatSci-NLP dataset (real annotated papers)
-         │
+CHEMDNER dataset (kjappelbaum/chemnlp-chemdner)
+         │  entity strings → BIO token tags (src/dataset.py)
          ▼
 m3rg-iitd/matscibert          ← domain BERT, pre-trained on 2M+ papers
-         │  fine-tuned with Trainer API
+         │  fine-tuned with HuggingFace Trainer API
          ▼
-Token Classification Head     ← linear layer, one output per BIO label
+Token Classification Head     ← linear layer, 3 outputs (O / B-CHEM / I-CHEM)
          │  aggregation_strategy="simple"
          ▼
 Entity spans with confidence scores
@@ -52,8 +51,8 @@ Entity spans with confidence scores
 ## Quickstart
 
 ```bash
-git clone https://github.com/your-username/matscibert-ner
-cd matscibert-ner
+git clone https://github.com/teman67/Fine-tuning-Materials-Scientific-NER-
+cd Fine-tuning-Materials-Scientific-NER-
 pip install -r requirements.txt
 ```
 
@@ -63,13 +62,15 @@ pip install -r requirements.txt
 python train.py
 ```
 
-Training downloads the MatSci-NLP dataset and MatSciBERT automatically from the
-HuggingFace Hub. On a free Colab T4 GPU this takes ~10–15 minutes.
+Downloads the CHEMDNER dataset and MatSciBERT automatically from the HuggingFace Hub.
+The dataset is split into ~6 800 training and ~6 800 validation examples.
 
 ### Evaluate
 
 ```bash
 python evaluate_model.py
+# or specify a custom model path:
+python evaluate_model.py --model_path ./model_output/final
 ```
 
 ### Run Gradio demo locally
@@ -78,7 +79,7 @@ python evaluate_model.py
 python app.py
 ```
 
-### Push to HuggingFace Hub
+### Push trained model to HuggingFace Hub
 
 ```bash
 huggingface-cli login
@@ -87,17 +88,34 @@ python train.py --push_to_hub --hub_model_id your-username/matscibert-ner
 
 ---
 
+## Dataset
+
+**[kjappelbaum/chemnlp-chemdner](https://huggingface.co/datasets/kjappelbaum/chemnlp-chemdner)**
+is derived from the [CHEMDNER corpus](https://doi.org/10.1186/1758-2946-7-S1-S2) (Krallinger et al., 2015).
+It contains chemical entity annotations (drug and chemical names) from PubMed abstracts and patents.
+
+| Split | Examples |
+|---|---|
+| Train | ~6 796 |
+| Validation | ~6 808 |
+| Total (raw) | 19 440 |
+
+The raw dataset provides entity surface strings per sentence; `src/dataset.py` converts these
+to BIO-tagged token sequences using character-offset matching.
+
+---
+
 ## Expected Results
 
-Fine-tuning MatSciBERT on MatSci-NLP NER:
+Fine-tuning MatSciBERT on CHEMDNER:
 
-| Metric | Score |
+| Metric | Expected range |
 |---|---|
-| F1 (overall) | ~0.80–0.87 |
-| Precision | ~0.82–0.89 |
-| Recall | ~0.78–0.86 |
+| F1 (CHEM) | ~0.75–0.85 |
+| Precision | ~0.77–0.87 |
+| Recall | ~0.73–0.83 |
 
-*Scores from the original MatSci-NLP paper benchmarks.*
+*Exact scores depend on hardware, random seed, and number of epochs.*
 
 ---
 
@@ -106,7 +124,7 @@ Fine-tuning MatSciBERT on MatSci-NLP NER:
 ```
 matscibert-ner/
 ├── src/
-│   ├── dataset.py        # MatSci-NLP loader from HuggingFace Hub
+│   ├── dataset.py        # CHEMDNER loader + BIO conversion
 │   └── inference.py      # Pipeline loader + entity span extraction
 ├── train.py              # HuggingFace Trainer fine-tuning script
 ├── evaluate_model.py     # Standalone evaluation script
@@ -119,7 +137,7 @@ matscibert-ner/
 ## References
 
 - **MatSciBERT:** Gupta et al., "MatSciBERT: A materials domain language model for text mining and information extraction", *npj Computational Materials*, 2022
-- **MatSci-LP:** Song et al., "MatSci-NLP: Evaluating Scientific NLP on Materials Science", ACL 2023
+- **CHEMDNER:** Krallinger et al., "The CHEMDNER corpus of chemicals and drugs and its annotation principles", *Journal of Cheminformatics*, 2015
 
 ---
 

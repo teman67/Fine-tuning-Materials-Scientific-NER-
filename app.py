@@ -15,12 +15,12 @@ from src.inference import (
 ner_pipeline = load_pipeline()
 
 EXAMPLES = [
-    "Titanium exhibits a tensile strength of 950 MPa after sintering at 1200 °C.",
-    "XRD characterisation confirmed phase purity of the synthesised alumina powder.",
-    "CVD deposition produces thin diamond films used in cutting tool applications.",
-    "Inconel 718 retains tensile strength beyond 700 °C due to gamma-prime precipitates.",
-    "SEM imaging revealed a porosity of 2.3% in the hot-pressed silicon carbide samples.",
-    "Electroplating applied a 25 µm nickel coating for corrosion protection.",
+    "Nitric oxide reacts with oxygen to form nitrogen dioxide.",
+    "Mercury and its compounds are highly toxic to living organisms.",
+    "Aspirin (acetylsalicylic acid) is widely used as an analgesic and anti-inflammatory.",
+    "The synthesis of titanocene dichloride was confirmed by NMR spectroscopy.",
+    "Ethanol is produced by fermentation of sugars by yeast.",
+    "Platinum catalysts are used in the hydrogenation of organic compounds.",
 ]
 
 
@@ -43,11 +43,11 @@ with gr.Blocks(
 ) as demo:
 
     gr.Markdown("""
-# 🔬 MatSciBERT — Scientific NER
+# 🔬 MatSciBERT — Chemical NER
 
 Fine-tuned **[m3rg-iitd/matscibert](https://huggingface.co/m3rg-iitd/matscibert)** on the
-**[MatSci-NLP](https://huggingface.co/datasets/m3rg-iitd/MatSci-NLP)** dataset for Named
-Entity Recognition across materials science literature.
+**[CHEMDNER](https://huggingface.co/datasets/kjappelbaum/chemnlp-chemdner)** dataset for Named
+Entity Recognition of chemical compounds in biomedical literature.
 
 Built with 🤗 **HuggingFace Transformers** · **Trainer API** · **seqeval** evaluation
 """)
@@ -62,7 +62,7 @@ Built with 🤗 **HuggingFace Transformers** · **Trainer API** · **seqeval** e
             run_btn = gr.Button("Extract Entities ▶", variant="primary")
 
         with gr.Column(scale=1):
-            gr.Markdown("**Entity Types (MatSci-NLP):**")
+            gr.Markdown("**Entity Types (CHEMDNER):**")
             for desc in ENTITY_DESCRIPTIONS.values():
                 gr.Markdown(desc)
 
@@ -80,8 +80,8 @@ Built with 🤗 **HuggingFace Transformers** · **Trainer API** · **seqeval** e
 
     gr.Markdown("""
 ---
-**Model:** MatSciBERT fine-tuned on MatSci-NLP NER  
-**Source:** [GitHub](https://github.com/your-username/matscibert-ner)
+**Model:** MatSciBERT fine-tuned on CHEMDNER (chemical NER)  
+**Source:** [GitHub](https://github.com/teman67/Fine-tuning-Materials-Scientific-NER-)
 """)
 
 if __name__ == "__main__":

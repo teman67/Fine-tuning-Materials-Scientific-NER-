@@ -1,9 +1,9 @@
 """
-train.py — Fine-tune MatSciBERT on the MatSci-NLP NER dataset.
+train.py — Fine-tune MatSciBERT on the CHEMDNER chemical NER dataset.
 
 Uses the HuggingFace Trainer API with:
   - Token classification head on m3rg-iitd/matscibert
-  - Real MatSci-NLP dataset from HuggingFace Hub
+  - CHEMDNER dataset (kjappelbaum/chemnlp-chemdner) from HuggingFace Hub
   - seqeval metrics (precision, recall, F1)
   - Model saved locally + optionally pushed to the HF Hub
 
@@ -113,7 +113,7 @@ def make_compute_metrics(label_names):
 # ------------------------------------------------------------------
 
 def train(push_to_hub: bool = False, hub_model_id: str = None):
-    logger.info("Loading MatSci-NLP dataset from HuggingFace Hub...")
+    logger.info("Loading CHEMDNER dataset from HuggingFace Hub...")
     dataset, label_names, label2id, id2label = build_dataset()
 
     logger.info(f"Loading tokenizer & model: {BASE_MODEL}")
